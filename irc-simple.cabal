@@ -1,0 +1,97 @@
+name:                irc-simple
+version:             0.1.0.0
+synopsis:            Simple IRC-like server
+description:         Simple IRC like server for learning purposes, this server
+                     does not solve all the problems and does not respect RFC-2813.
+                     This is done for the purpose of the simplicity and in addition
+                     it can be used in order to introduce additional functionality and
+                     learn and show how is it possible to refactor Haskell code.
+                     .
+                     On it's own this is only a learning project but it's possible to
+                     convert this code to either full featured irc server or to some
+                     other *non-persistent* pub-sub service.
+license:             BSD3
+license-file:        LICENSE
+author:              Alexander Vershilov
+maintainer:          alexander.vershilov@gmail.com
+-- copyright:           
+category:            Network
+build-type:          Simple
+extra-source-files:  ChangeLog.md
+
+cabal-version:       >=2.0
+
+
+library
+  exposed-modules:   Client
+                     Server
+                     Server.Internal
+                     Server.Handler
+                     Server.Channel
+                     Server.User
+                     Protocol
+                     Protocol.Errors
+                     Protocol.Types
+                     Protocol.Replies
+                     Protocol.Wire
+                     Uni 
+  build-depends:     base,
+                     async,
+                     attoparsec,
+                     bytestring,
+                     conduit,
+                     conduit-extra,
+                     containers,
+                     exceptions,
+                     resourcet,
+                     stm,
+                     lens,
+                     mtl,
+                     smallcheck,
+                     text,
+                     transformers,
+                     transformers-base
+  options-ghc:         -Wall -Werror
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+
+executable server
+  main-is:             server.hs
+  build-depends:       base,
+                       irc-simple,
+                       bytestring,
+                       conduit-extra,
+                       optparse-applicative
+  options-ghc:         -Wall -Werror
+  hs-source-dirs:      app
+  default-language:    Haskell2010
+
+executable client
+  main-is:             client.hs
+  build-depends:       base,
+                       irc-simple,
+                       bytestring,
+                       conduit-extra,
+                       optparse-applicative
+  hs-source-dirs:      app
+  options-ghc:         -Wall -Werror
+  default-language:    Haskell2010
+
+test-suite unit
+  type:             exitcode-stdio-1.0
+  default-language: Haskell2010
+  hs-source-dirs:   tests
+  main-is:          unit.hs
+  other-modules:    Test.Protocol.Parser
+  build-depends:    base,
+                    irc-simple,
+                    attoparsec,
+                    lens,
+                    smallcheck,
+                    tasty,
+                    tasty-hunit,
+                    tasty-smallcheck,
+                    text
+  options-ghc:         -Wall -Werror
+  default-language:    Haskell2010
+
