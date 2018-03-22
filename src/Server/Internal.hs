@@ -32,7 +32,7 @@ import qualified Data.Map as Map
 import           Data.Set (Set)
 import           Data.Text (Text)
 import           Protocol  (Nickname, Channel)
-import qualified Protocol as Protocol
+import qualified Protocol
 import qualified Protocol.Wire as Wire
 
 
@@ -73,7 +73,7 @@ data ChannelState = ChannelState
 
 -- | Информация о пользователе, канал, который используется для
 -- отправки сообщений.
-data UserInfo = UserInfo
+newtype UserInfo = UserInfo
   { userQueue :: Message -> STM ()
   }
 

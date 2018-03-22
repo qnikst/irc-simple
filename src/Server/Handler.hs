@@ -1,7 +1,7 @@
 -- Это модуль для обработчиков. Тут уже начинаются интересные моменты.
 -- Предполагается, что код будет рабоать с сервером через этот интерфейс
 -- который описывает какие возможности есть у пользователя.
--- Я решил продемонтсрировать работу с STM тут, с одной стороны это 
+-- Я решил продемонтсрировать работу с STM тут, с одной стороны это
 -- не полезно для сервера, но с другой дает интересные свойства, которые
 -- могут быть нужны в других проектах. Так же демонстрирует то, какие
 -- возможности может дать чистота языка.
@@ -79,7 +79,7 @@ module Server.Handler
 -- @
 -- liftBase (readTVar a) :: ReaderT Env STM A
 -- @
--- 
+--
 -- Делает из STM операции операцию в нашем контексте.
 import           Control.Monad.Base
 import           Control.Monad.Reader                -- Интерфейс для Reader
@@ -159,7 +159,7 @@ newtype Handler e a = Handler { unHandler :: ReaderT HandlerState (ExceptT e STM
 -- и позволять пользователю запускать обработчики, при этом не отдавая им информацию
 -- о внутренем состоянии. Так же аналог это handle pattern, но мы ж не знаем требований
 -- и хотим сделать общий вариант.
-data RunHandler m = RunHandler {
+newtype RunHandler m = RunHandler {
   runHandler :: forall e. (IsCodeError (Uni e), Monad m)
              => Handler (Uni e) ()
              -> m ()
@@ -175,7 +175,7 @@ instance HasServerState (Handler e) where
 -- | Обновить список каналов пользователя. (Boilderplate!)
 --
 -- XXX: лично мне не нравится эта штука, я бы лучше сделал явное API
--- в Server.User, которое бы принимало атомарные операции, а не этот 
+-- в Server.User, которое бы принимало атомарные операции, а не этот
 -- @(Set Channel -> Set Channel)@
 updateUserChannels :: (Set Channel -> Set Channel) -> Handler e ()
 updateUserChannels f = do
@@ -234,7 +234,7 @@ unregister ss state = do
   nick     <- readTVar $ userNickname state
   uch      <- readTVar $ userChannels state
   runReaderT (updateServerUsers $ Map.delete nick) ss   -- убрали из списка
-  for_ uch $ \ch -> runUni @[NotOnChannel, NoSuchChannel] $ do
+  for_ uch $ \ch -> runUni @[NotOnChannel, NoSuchChannel] $
     flip runReaderT ss $ do
       st <- Channel.get ch
       Channel.partUser st nick (Just "connection closed..") -- послали PART сообщение

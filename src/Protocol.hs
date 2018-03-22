@@ -50,7 +50,7 @@ instance Wire.IsMessage Message where
                          & trailing .~ reason
   toMessage (PrivMsg trgt text) =
     mkTextCommand "PRIVMSG" & params .~ [T.toParam trgt]
-                            & trailing .~ Just text
+                            & trailing ?~ text
   toMessage (Nick nick)         =
     mkTextCommand "NICK" & params .~ [T.toParam nick]
 

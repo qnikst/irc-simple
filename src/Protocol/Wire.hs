@@ -1,6 +1,4 @@
-{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ViewPatterns #-}
 -- | Обработка сырого протокола.
 module Protocol.Wire
   ( -- * Типы
@@ -67,7 +65,7 @@ toWire (Message prefix' cmd params' trail) = mconcat
         <> Builder.singleton (i2d c)
   , case params' of
       [] -> mempty
-      _  -> singleton ' ' <> (Builder.fromText $ Text.intercalate " " $ coerce params')
+      _  -> singleton ' ' <> Builder.fromText (Text.intercalate " " $ coerce params')
   , case trail of
       Nothing -> mempty
       Just s  -> Builder.singleton ' '
@@ -129,7 +127,7 @@ message :: Parser Message
 message = convert
        <$> optional (char ':' *> prefix <* char ' ')
        <*> command
-       <*> (optional ((,) <$> (many1 (char ' ' *> (Param <$> middle)))
+       <*> (optional ((,) <$> many1 (char ' ' *> (Param <$> middle))
                           <*> optional (space *> char ':' *> trailing)))
        <*  char '\r'
        <*  char '\n'
@@ -172,7 +170,7 @@ trailing :: Parser Text
 trailing = Parser.takeWhile (/= '\r')
 
 msgtarget :: Parser MsgTarget
-msgtarget = fmap MsgTarget $ (NE.:|) <$> msgto <*> (sepBy msgto ",")
+msgtarget = fmap MsgTarget $ (NE.:|) <$> msgto <*> sepBy msgto ","
 
 msgto :: Parser MsgTo
 msgto = asum [ MsgToChannel <$> channel

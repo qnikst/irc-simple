@@ -45,30 +45,30 @@ instance (IsCodeError a, IsCodeError b) => IsCodeError (Either a b) where
   populate (Right b) = populate b
 
 -- | @401 ERR_NOSUCHNICK "<server name> :No such server"@
-data NoSuchNick = NoSuchNick Nickname
+newtype NoSuchNick = NoSuchNick Nickname
 instance IsCodeError NoSuchNick where
   code _ = Code 4 0 1
   populate (NoSuchNick nick) msg
     = msg & params .~ [toParam nick]
-          & trailing .~ Just "No such nick/channel"
+          & trailing ?~ "No such nick/channel"
 
 -- 402 ERR_NOSUCHSERVER "<server name> :No such server"
 
 -- | @403 ERR_NOSUCHCHANNEL"<channel name> :No such channel"@
-data NoSuchChannel = NoSuchChannel Channel
+newtype NoSuchChannel = NoSuchChannel Channel
 instance IsCodeError NoSuchChannel where
   code _ = Code 4 0 3
   populate (NoSuchChannel chan) msg
     = msg & params .~ [toParam chan]
-          & trailing .~ Just "No such channel"
+          & trailing ?~ "No such channel"
 
 -- | @404 ERR_CANNOTSENDTOCHAN"<channel name> :Cannot send to channel"@
-data CanNotSendToChan = CanNotSendToChan Channel
+newtype CanNotSendToChan = CanNotSendToChan Channel
 instance IsCodeError CanNotSendToChan where
   code _ = Code 4 0 4
   populate (CanNotSendToChan chan) msg
     = msg & params .~ [toParam chan]
-          & trailing .~ Just "Cannot send to channel"
+          & trailing ?~ "Cannot send to channel"
 
 -- 405 ERR_TOOMANYCHANNELS"<channel name> :You have joined too many channels"
 -- 406 ERR_WASNOSUCHNICK"<nickname> :There was no such nickname"
@@ -88,23 +88,23 @@ instance IsCodeError CanNotSendToChan where
 -- 432 ERR_ERRONEUSNICKNAME"<nick> :Erroneous nickname"
 
 -- | @433 ERR_NICKNAMEINUSE"<nick> :Nickname is already in use"@
-data NickNameInUse = NickNameInUse Nickname
+newtype NickNameInUse = NickNameInUse Nickname
 instance IsCodeError NickNameInUse where
   code _ = Code 4 3 3
   populate (NickNameInUse nick) msg
     = msg & params .~ [toParam nick]
-          & trailing .~ Just "Nickname already is use"
+          & trailing ?~ "Nickname already is use"
 -- 436 ERR_NICKCOLLISION"<nick> :Nickname collision KILL from <user>@<host>"
 -- 437 ERR_UNAVAILRESOURCE"<nick/channel> :Nick/channel is temporarily unavailable"
 -- 441 ERR_USERNOTINCHANNEL"<nick> <channel> :They aren't on that channel"
 
 -- | @442 ERR_NOTONCHANNEL"<channel> :You're not on that channel"@
-data NotOnChannel = NotOnChannel !Channel
+newtype NotOnChannel = NotOnChannel Channel
 instance IsCodeError NotOnChannel where
   code _ = Code 4 4 2
   populate (NotOnChannel chan) msg
     = msg & params .~ [toParam chan]
-          & trailing .~ Just "YYou're not on that channel"
+          & trailing ?~ "You're not on that channel"
 
 -- | @443 ERR_USERONCHANNEL"<user> <channel> :is already on channel"@
 data UserOnChannel = UserOnChannel !Nickname !Channel
@@ -112,7 +112,7 @@ instance IsCodeError UserOnChannel where
   code _ = Code 4 4 3
   populate (UserOnChannel nick chan) msg
     = msg & params .~ [toParam nick, toParam chan]
-          & trailing .~ Just "is already on channel"
+          & trailing ?~ "is already on channel"
 
 -- 444 ERR_NOLOGIN"<user> :User not logged in"
 -- 445 ERR_SUMMONDISABLED":SUMMON has been disabled"

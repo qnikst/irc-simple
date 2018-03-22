@@ -32,7 +32,7 @@ import           Uni
 --    HasServerState - у нас есть доступ к состоянию сервера
 --
 -- У нас есть 2 кандидата для контекста где мы можем это выполнять
--- 
+--
 --    ReaderT ServerState
 --    Handler e
 --
@@ -104,7 +104,7 @@ send :: (MonadBase STM m, HasServerState m)
      => ChannelState
      -> Message
      -> m ()
-send state msg = do
+send state msg =
   for_ (channelUsers state) $ \nick -> Internal.send nick msg
 
 member :: Nickname -> ChannelState -> Bool
